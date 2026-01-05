@@ -64,9 +64,10 @@ function replaceFirst(arr = []) {
     if (!Array.isArray(arr)) {
         throw new TypeError(`${arr} type must be an array`)
     }
-    if (arr.length === 0 || arr.length === 1) return arr
-    arr.push(arr.shift())
-    return arr
+    if (arr.length <= 1) return arr.slice()
+    const _temp = arr.slice()
+    _temp.push(_temp.shift())
+    return _temp
 }
 // console.log(replaceFirst([1, 2, 3, 4]), replaceFirst([1]));
 
@@ -162,17 +163,15 @@ function timeConverter(str = "") {
     if (!str || typeof str !== 'string') {
         throw new TypeError(`${str} type must be a string`)
     }
-    let timeMark = 'A.M.'
     let [h, m] = str.split(':').map((item, i) => i === 0 ? Number(item) : item)
-    if (h >= 0 && h < 12) {
-        return `${h}:${m} ${timeMark}`
+    if (h === 0) {
+        return `12:${m} A.M.`
+    } else if (h < 12) {
+        return `${h}:${m} A.M.`
+    } else if (h === 12) {
+        return `12:${m} P.M.`
     } else {
-        timeMark = 'P.M.'
-        if (Math.abs(12 - h) !== 0) {
-            h = Math.abs(12 - h)
-            return `${h}:${m} ${timeMark}`
-        }
-        return `${h}:${m} ${timeMark}`
+        return `${h - 12}:${m} P.M.`
     }
 }
 // console.log(Number('00'),timeConverter("00:00"), timeConverter("09:00"), timeConverter("12:30"), timeConverter("23:15"));
