@@ -15,12 +15,10 @@ firstWord("hi!") // 返回 "hi"} str
 */
 function firstWord(str = '') {
     if (!str || typeof str !== 'string') return ''
-    const words = str.split(/\s+/).filter(word => /^[a-zA-Z0-9]+$/.test(word))
-    if (words && words.length) {
-        return words[0]
-    }
+    const matchs = str.match(/[a-zA-Z0-9]+/)
+    return matchs ? matchs[0] : ''
 }
-// console.log(firstWord('hello words'), firstWord('he sss '))
+// console.log(firstWord('hello words'), firstWord('he sss '), firstWord('he!'))
 
 /**
 2. 连续三个单词
@@ -117,13 +115,11 @@ function popularWords(str = '', targetArr = []) {
     strArr.forEach(key => Reflect.has(result, key) ? result[key]++ : null)
     return result
 }
-
 // const _res3 = popularWords(`
 // When I was One
 // I had just begun
 // When I was Two
 // I was nearly new`, ['i', 'was', 'three', 'near']) 
-
 // console.log(_res3);
 
 /**
@@ -168,7 +164,7 @@ function betweenMarkers(xmlText = '', tagLeft, tagRight) {
     if (leftIndex === -1) return ''
     leftIndex += tagLeft.length
 
-    const rightIndex = xmlText.lastIndexOf(tagRight)
+    const rightIndex = xmlText.indexOf(tagRight, leftIndex)  // 从左标记后查找
     return xmlText.substring(leftIndex, rightIndex)
 }
 
@@ -266,11 +262,11 @@ function findOccurrences(text = '', target) {
     let index = text.indexOf(target)
     while (index !== -1) {
         result.push(index)
-        index = text.indexOf(target, target.length + index)
+        index = text.indexOf(target, index + 1)
     }
     return result
 }
-// console.log(findOccurrences("Hello, hello, hello, world!", "hello"), findOccurrences("Hello, hello, hello, world!", "Hello"));
+// console.log(findOccurrences("Hello, hello, hello, world!", "hello"), findOccurrences("Hello, hello, hello, world!", "Hello"), findOccurrences("aaa", "aa"));
 
 /**
 11. 数字求和
@@ -356,14 +352,14 @@ digitMultiplication(9876) // 返回 3024
  */
 function digitMultiplication(num) {
     if (typeof num !== 'number') {
-        typeof new TypeError(`${num} type must be a number`)
+        throw new TypeError(`${num} type must be a number`)
     }
     const matchs = `${num}`.match(/[0-9]/g)
 
     if (matchs && matchs?.length) {
         return matchs.map(Number).reduce((prev, current) => prev * current, 1)
     }
-    return NaN
+    return 0
 }
 // console.log(digitMultiplication(123), digitMultiplication(9876));
 
@@ -404,7 +400,7 @@ function removeAllBefore(arr = [], num) {
     if (!Array.isArray(arr) || arr.length === 0) return []
     const index = arr.indexOf(num)
     if (index === -1) return arr
-    return arr.splice(index)
+    return arr.slice(index)
 }
 // console.log(removeAllBefore([1, 2, 3, 4, 5], 3), removeAllBefore([1, 1, 2, 2, 3, 3], 2));
 
@@ -471,7 +467,7 @@ function beginningZeros(text = '') {
     }
     return count
 }
-console.log(beginningZeros("100"), beginningZeros("001"), beginningZeros("00100"));
+// console.log(beginningZeros("100"), beginningZeros("001"), beginningZeros("00100"));
 
 /**
 20. 拆分成对
@@ -496,5 +492,4 @@ function splitPairs(text = "") {
     }
     return result
 }
-
-console.log(splitPairs('abcd'), splitPairs("abc"));
+// console.log(splitPairs('abcd'), splitPairs("abc"));
