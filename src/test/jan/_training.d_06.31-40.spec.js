@@ -85,11 +85,15 @@ function sortByExt(arr = []) {
     const sortExts = [...map.entries()].sort()
 
     sortExts.forEach(([fExt, fNames]) => {
-        fNames.forEach(fName => `${fName}` === '' ? sortRes.push(fExt) : fName)
+        fNames.forEach(fName => {
+            if (!fName) {
+                sortRes.push(`${fExt}`)
+            }
+        })
     })
 
     sortExts.forEach(([fExt, fNames]) => {
-        const _fNames = fNames.filter(i => i)
+        const _fNames = fNames.filter(i => i).sort()
         _fNames.forEach(fName => sortRes.push(`${fName}${fExt}`))
     })
 
@@ -113,20 +117,26 @@ longRepeat("sdsffffse") // 返回 4
 longRepeat("ddvvrwwwrggg") // 返回 3
  */
 function longRepeat(str = '') {
-    if (!str || typeof str !== 'string') {
+    if (typeof str !== 'string') {
         throw new TypeError(`${str} type must be a string`)
     }
+    if (str.length === 0) return 0
+    if (str.length === 1) return 1
+
     let maxLang = 1
-    let markLeft = str[0]
-    let leftIndex = 0
-    let markRight = ''
-    for (let i = 0; i < str.length; i++) {
-        markRight = str[i]
-        if (markLeft !== markRight) {
-            maxLang = Math.max(maxLang, i - leftIndex)
-            markLeft = markRight
-            leftIndex = i
+    let curLang = 1
+    for (let i = 1; i < str.length; i++) {
+        if (str[i] === str[i - 1]) {
+            curLang++
+        } else {
+            if (curLang > maxLang) {
+                maxLang = curLang
+            }
+            curLang = 1
         }
+    }
+    if (curLang > maxLang) {
+        maxLang = curLang
     }
     return maxLang
 }
@@ -151,6 +161,9 @@ function isAnagram(str1 = '', str2 = '') {
     if (typeof str1 !== 'string' || typeof str2 !== 'string') {
         throw new TypeError(`${str1 || str2} type must be a string`)
     }
+    const str1Arr = str1.match(/[a-zA-Z]/g)
+    const str2Arr = str2.match(/[a-zA-Z]/g)
+    if (str1Arr === null || str2Arr === null) return false
     return str1.match(/[a-zA-Z]/g).map(i => `${i}`.toLowerCase()).sort().join('') === str2.match(/[a-zA-Z]/g).map(i => `${i}`.toLowerCase()).sort().join('')
 }
 // console.log(isAnagram("Listen", "Silent"), isAnagram("Hello", "Ole Oh"));
@@ -177,7 +190,12 @@ function freqSort(arr = []) {
     const res = []
     arr.forEach(i => !map.has(i) ? map.set(i, 1) : map.set(i, map.get(i) + 1))
 
-    Array.from(map.entries()).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => {
+    Array.from(map.entries()).sort((a, b) => {
+        if (b[1] === a[1]) {
+            return a[0] - b[0]
+        }
+        return b[1] - a[1]
+    }).forEach(([k, v]) => {
         res.push(...Array(v).fill(k))
     })
 
@@ -283,15 +301,15 @@ function commonWords(str1 = '', str2 = '') {
     if (typeof str1 !== 'string' || typeof str2 !== 'string') {
         throw new TypeError(`${str1 || str2} type must be a string`)
     }
-    const leftStrArr = str1.split(',').map(i => `${i}`.toLowerCase()).sort()
-    const rightStrArr = str2.split(',').map(i => `${i}`.toLowerCase()).sort()
+    const leftStrArr = new Set(str1.split(',').map(i => `${i}`.toLowerCase()))
+    const rightStrArr = new Set(str2.split(',').map(i => `${i}`.toLowerCase()))
 
     const res = []
     leftStrArr.forEach(i => {
-        if (rightStrArr.includes(i)) {
+        if (rightStrArr.has(i)) {
             res.push(i)
         }
     })
-    return res
+    return res.sort()
 }
 // console.log(commonWords("hello,world", "hello,earth"), commonWords("one,two,three", "four,five,one,two,six,three"));
